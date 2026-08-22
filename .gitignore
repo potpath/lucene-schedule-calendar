@@ -1,4 +1,6 @@
 schedule.jpg
+.last_sync_input.ndjson
+.last_sync_output.ndjson
 .last_sync_result.json
 sync.log
 .DS_Store

@@ -19,7 +19,7 @@ REPO_DIR = "$HOME/code/youtube/calendar"
 ICS_PATH = f"{REPO_DIR}/lucene-schedule.ics"
 LAST_WEEK_PATH = f"{REPO_DIR}/.last_week"
 SOURCE_VIDEO_URL = "https://www.youtube.com/watch?v=O4FtQpWRAB8"
-CHANNEL_LIVE_URL = "https://www.youtube.com/@PLGLucene/live"
+CHANNEL_LIVE_URL = "https://www.youtube.com/@LucenePLG/live"
 BANGKOK = timezone(timedelta(hours=7))
 STREAM_DURATION = timedelta(hours=2)
 PRUNE_AFTER = timedelta(days=14)
