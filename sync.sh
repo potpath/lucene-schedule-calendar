@@ -80,7 +80,7 @@ APPLY_STATUS=$?
 rm -f "$IMG" "$INPUT_NDJSON" "$OUTPUT_NDJSON" "$RESULT_JSON"
 
 if [ "$APPLY_STATUS" -eq 10 ]; then
-  log "No new week posted yet. Done."
+  log "No schedule changes. Done."
   exit 0
 elif [ "$APPLY_STATUS" -ne 0 ]; then
   log "ERROR: sync_apply.py failed (exit $APPLY_STATUS), leaving repos untouched."
