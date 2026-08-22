@@ -2,5 +2,7 @@ schedule.jpg
 .last_sync_input.ndjson
 .last_sync_output.ndjson
 .last_sync_result.json
+.last_thumbnail_etag
+.last_thumbnail_hash
 sync.log
 .DS_Store

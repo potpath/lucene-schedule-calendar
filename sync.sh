@@ -13,10 +13,21 @@ IMG="$PRIVATE_DIR/schedule.jpg"
 INPUT_NDJSON="$PRIVATE_DIR/.last_sync_input.ndjson"
 OUTPUT_NDJSON="$PRIVATE_DIR/.last_sync_output.ndjson"
 RESULT_JSON="$PRIVATE_DIR/.last_sync_result.json"
+LAST_ETAG_PATH="$PRIVATE_DIR/.last_thumbnail_etag"
+LAST_HASH_PATH="$PRIVATE_DIR/.last_thumbnail_hash"
 
 SCHEMA='{"type":"object","properties":{"found_schedule":{"type":"boolean"},"week_monday":{"type":["string","null"]},"days":{"type":"array","items":{"type":"object","properties":{"day":{"type":"string","enum":["MON","TUE","WED","THU","FRI","SAT","SUN"]},"rest":{"type":"boolean"},"date":{"type":["string","null"]},"time":{"type":["string","null"]},"title":{"type":["string","null"]}},"required":["day","rest","date","time","title"]},"minItems":7,"maxItems":7},"notes":{"type":"string"}},"required":["found_schedule","week_monday","days","notes"]}'
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
+
+# Fetches just the ETag header for a thumbnail URL, no body download. YouTube's
+# CDN sets this to what looks like the Unix timestamp of when that thumbnail
+# was last (re)generated (verified: it decodes to a plausible recent date), so
+# an unchanged ETag is a reliable "nothing to do" signal straight from
+# YouTube - cheaper than even downloading the image, let alone calling claude.
+fetch_etag() {
+  curl -sI --fail "$1" 2>/dev/null | tr -d '\r' | grep -i '^etag:' | head -n1 | cut -d: -f2 | tr -d ' "'
+}
 
 # If a previous run committed locally but failed to push (network blip, auth
 # expiry, etc.), the commit sits ahead of origin and next time we'd otherwise
@@ -47,6 +58,19 @@ ensure_pushed "$PUBLIC_DIR"
 cd "$PRIVATE_DIR" || { log "ERROR: cannot cd to $PRIVATE_DIR"; exit 1; }
 git pull --ff-only origin main || log "WARN: git pull failed, continuing with local state"
 
+log "Checking thumbnail ETag (cheap pre-check, no download)..."
+NEW_ETAG=$(fetch_etag "https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg")
+[ -z "$NEW_ETAG" ] && NEW_ETAG=$(fetch_etag "https://i.ytimg.com/vi/${VIDEO_ID}/hqdefault.jpg")
+
+LAST_ETAG=""
+[ -f "$LAST_ETAG_PATH" ] && LAST_ETAG=$(cat "$LAST_ETAG_PATH")
+
+if [ -n "$NEW_ETAG" ] && [ "$NEW_ETAG" = "$LAST_ETAG" ]; then
+  log "Thumbnail ETag unchanged ($NEW_ETAG) - YouTube hasn't touched it since last run. Skipping download and claude call."
+  exit 0
+fi
+[ -z "$NEW_ETAG" ] && log "WARN: could not read an ETag from either thumbnail size, falling back to download+hash check."
+
 log "Downloading schedule thumbnail..."
 if ! curl -sL --fail "https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg" -o "$IMG"; then
   log "maxresdefault failed, trying hqdefault..."
@@ -61,7 +85,22 @@ if ! file "$IMG" | grep -qi "image"; then
   exit 1
 fi
 
-log "Extracting schedule via claude (zero tool access - Read/Bash/network all disabled)..."
+# Second gate, on actual bytes: catches the case where the CDN reissued a new
+# ETag (e.g. re-encode/reprocess) without the visible content actually
+# changing. Skipping claude here also avoids feeding it the same image twice,
+# which would risk non-deterministic OCR output on an unchanged thumbnail.
+NEW_HASH=$(shasum -a 256 "$IMG" | awk '{print $1}')
+LAST_HASH=""
+[ -f "$LAST_HASH_PATH" ] && LAST_HASH=$(cat "$LAST_HASH_PATH")
+
+if [ "$NEW_HASH" = "$LAST_HASH" ]; then
+  log "Thumbnail bytes unchanged (hash $NEW_HASH) even though the ETag differed - skipping claude call."
+  rm -f "$IMG"
+  [ -n "$NEW_ETAG" ] && echo "$NEW_ETAG" > "$LAST_ETAG_PATH"
+  exit 0
+fi
+
+log "Thumbnail changed, extracting schedule via claude (zero tool access - Read/Bash/network all disabled)..."
 python3 "$PRIVATE_DIR/build_input.py" "$IMG" > "$INPUT_NDJSON"
 
 "$CLAUDE_BIN" -p \
@@ -81,11 +120,20 @@ rm -f "$IMG" "$INPUT_NDJSON" "$OUTPUT_NDJSON" "$RESULT_JSON"
 
 if [ "$APPLY_STATUS" -eq 10 ]; then
   log "No schedule changes. Done."
+  [ -n "$NEW_ETAG" ] && echo "$NEW_ETAG" > "$LAST_ETAG_PATH"
+  echo "$NEW_HASH" > "$LAST_HASH_PATH"
   exit 0
 elif [ "$APPLY_STATUS" -ne 0 ]; then
   log "ERROR: sync_apply.py failed (exit $APPLY_STATUS), leaving repos untouched."
+  log "Not recording thumbnail ETag/hash, so this same thumbnail is retried next run."
   exit 1
 fi
+
+# Only now, once claude successfully parsed this exact image, do we record it
+# as "seen" - a failed/errored run above deliberately skips this so the same
+# thumbnail gets retried next time instead of being silently skipped forever.
+[ -n "$NEW_ETAG" ] && echo "$NEW_ETAG" > "$LAST_ETAG_PATH"
+echo "$NEW_HASH" > "$LAST_HASH_PATH"
 
 log "New week applied. Committing private repo (scripts/state/history)..."
 git add lucene-schedule.ics .last_week
