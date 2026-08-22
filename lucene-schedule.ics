@@ -1,0 +1,69 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Lucene Ch. Weekly Schedule//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Lucene Ch. Weekly Schedule
+X-WR-TIMEZONE:Asia/Bangkok
+X-WR-CALDESC:Weekly livestream schedule for Lucene Ch. (Lucene - Polygon Project VTuber), sourced from the pinned schedule video https://www.youtube.com/watch?v=O4FtQpWRAB8
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-17@lucenech
+DTSTAMP:20260822T000000Z
+DTSTART:20260817T150000Z
+DTEND:20260817T170000Z
+SUMMARY:[Lucene Ch.] Q&A เรื่องความกลัว
+DESCRIPTION:Q&A about fears.\nLocal time: Mon 17 Aug 2026\, 22:00 GMT+7.\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@PLGLucene/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-19@lucenech
+DTSTAMP:20260822T000000Z
+DTSTART:20260819T133000Z
+DTEND:20260819T153000Z
+SUMMARY:[Lucene Ch.] ร้องเพลง (Singing Stream)
+DESCRIPTION:Singing stream.\nLocal time: Wed 19 Aug 2026\, 20:30 GMT+7.\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@PLGLucene/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-20@lucenech
+DTSTAMP:20260822T000000Z
+DTSTART:20260820T110000Z
+DTEND:20260820T130000Z
+SUMMARY:[Lucene Ch.] ตาชั่งตัดสินบาปของเจ้า
+DESCRIPTION:Game stream: "ตาชั่งตัดสินบาปของเจ้า".\nLocal time: Thu 20 Aug 2026\, 18:00 GMT+7.\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@PLGLucene/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-22@lucenech
+DTSTAMP:20260822T000000Z
+DTSTART:20260822T113000Z
+DTEND:20260822T133000Z
+SUMMARY:[Lucene Ch.] Uma Musume: Pretty Derby
+DESCRIPTION:Uma Musume Pretty Derby stream.\nLocal time: Sat 22 Aug 2026\, 18:30 GMT+7.\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@PLGLucene/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-23@lucenech
+DTSTAMP:20260822T000000Z
+DTSTART:20260823T150000Z
+DTEND:20260823T170000Z
+SUMMARY:[Lucene Ch.] พี่สาวมาทักทายกันค่ะ
+DESCRIPTION:Chat/zatsudan stream ("Big sister comes to say hi").\nLocal time: Sun 23 Aug 2026\, 22:00 GMT+7.\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@PLGLucene/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR
