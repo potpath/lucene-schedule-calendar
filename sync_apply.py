@@ -13,7 +13,7 @@ Exit codes:
 import json
 import re
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 REPO_DIR = "$HOME/code/youtube/calendar"
 ICS_PATH = f"{REPO_DIR}/lucene-schedule.ics"
@@ -97,6 +97,12 @@ def main():
         sys.exit(1)
 
     try:
+        week_monday_date = date.fromisoformat(week_monday)
+    except ValueError:
+        print(f"ERROR: unparseable week_monday value: {week_monday!r}", file=sys.stderr)
+        sys.exit(1)
+
+    try:
         with open(LAST_WEEK_PATH, encoding="utf-8") as f:
             last_week = f.read().strip()
     except FileNotFoundError:
@@ -105,6 +111,22 @@ def main():
     if week_monday == last_week:
         print(f"No new week (already synced {week_monday}).")
         sys.exit(10)
+
+    if last_week:
+        try:
+            last_week_date = date.fromisoformat(last_week)
+        except ValueError:
+            print(f"ERROR: .last_week contains an unparseable date: {last_week!r}", file=sys.stderr)
+            sys.exit(1)
+        if week_monday_date <= last_week_date:
+            print(
+                f"ERROR: extracted week_monday {week_monday} is not after the currently "
+                f"tracked week {last_week} - refusing to apply. This looks like a stale or "
+                f"cached thumbnail rather than a real new week. Failing fast without "
+                f"touching .last_week or lucene-schedule.ics.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
     days = {d["day"]: d for d in data.get("days", [])}
     missing = [d for d in DAY_ORDER if d not in days]
@@ -123,8 +145,26 @@ def main():
         if not (row.get("date") and row.get("time") and row.get("title")):
             print(f"ERROR: non-rest day {day} missing date/time/title: {row}", file=sys.stderr)
             sys.exit(1)
-        uid = f"lucene-schedule-{row['date']}@lucenech"
-        new_events.append((uid, build_vevent(row["date"], row["time"], row["title"], dtstamp)))
+
+        # The day-of-week position in the graphic (MON..SUN, always a fixed 7-row
+        # template) is more trustworthy than the OCR'd/typed date text next to it -
+        # the channel occasionally typos the printed date. So the actual date used
+        # is always derived from week_monday + weekday offset; the extracted date
+        # is only a sanity cross-check (also implicitly a range check, since the
+        # derived date is by construction always within the week).
+        expected_date = week_monday_date + timedelta(days=DAY_ORDER.index(day))
+        expected_date_str = expected_date.isoformat()
+        if row["date"] != expected_date_str:
+            print(
+                f"WARN: {day} extracted date {row['date']!r} does not match the date "
+                f"implied by its position in the week ({expected_date_str}). Using "
+                f"{expected_date_str} (day-of-week position is more reliable than the "
+                f"source graphic's typed date).",
+                file=sys.stderr,
+            )
+
+        uid = f"lucene-schedule-{expected_date_str}@lucenech"
+        new_events.append((uid, build_vevent(expected_date_str, row["time"], row["title"], dtstamp)))
 
     if not new_events:
         print(f"ERROR: extraction for week {week_monday} has zero non-rest days - suspicious, refusing to apply.", file=sys.stderr)

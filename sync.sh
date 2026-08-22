@@ -18,8 +18,33 @@ SCHEMA='{"type":"object","properties":{"found_schedule":{"type":"boolean"},"week
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
 
-cd "$PRIVATE_DIR" || { log "ERROR: cannot cd to $PRIVATE_DIR"; exit 1; }
+# If a previous run committed locally but failed to push (network blip, auth
+# expiry, etc.), the commit sits ahead of origin and next time we'd otherwise
+# never look at it again (state on disk already says "synced"). So before
+# doing anything else, retry pushing any such leftover commits in both repos.
+# If a retry still fails, stop here rather than starting a fresh extraction
+# on top of an already-inconsistent repo.
+ensure_pushed() {
+  local dir="$1"
+  cd "$dir" || { log "ERROR: cannot cd to $dir"; exit 1; }
+  git fetch origin main --quiet 2>>"$PRIVATE_DIR/sync.log"
+  local ahead
+  ahead=$(git rev-list --count origin/main..HEAD 2>/dev/null || echo 0)
+  if [ "$ahead" -gt 0 ]; then
+    log "$dir has $ahead unpushed commit(s) from a previous run, retrying push..."
+    if git push origin main; then
+      log "Retry push succeeded for $dir."
+    else
+      log "ERROR: retry push still failing for $dir. Will retry again next run."
+      exit 1
+    fi
+  fi
+}
 
+ensure_pushed "$PRIVATE_DIR"
+ensure_pushed "$PUBLIC_DIR"
+
+cd "$PRIVATE_DIR" || { log "ERROR: cannot cd to $PRIVATE_DIR"; exit 1; }
 git pull --ff-only origin main || log "WARN: git pull failed, continuing with local state"
 
 log "Downloading schedule thumbnail..."
@@ -64,26 +89,33 @@ fi
 
 log "New week applied. Committing private repo (scripts/state/history)..."
 git add lucene-schedule.ics .last_week
-if git commit -m "Update schedule for week of $(cat .last_week)"; then
-  if ! git push origin main; then
-    log "ERROR: private repo git push failed."
+if git diff --cached --quiet; then
+  log "WARN: nothing staged in private repo (unexpected, sync_apply.py reported a change)."
+else
+  if ! git commit -m "Update schedule for week of $(cat .last_week)"; then
+    log "ERROR: private repo git commit failed."
     exit 1
   fi
-else
-  log "WARN: nothing to commit in private repo (unexpected)."
+  if ! git push origin main; then
+    log "ERROR: private repo git push failed. Will retry on next run."
+    exit 1
+  fi
 fi
 
 log "Mirroring lucene-schedule.ics to public repo..."
 cp "$PRIVATE_DIR/lucene-schedule.ics" "$PUBLIC_DIR/lucene-schedule.ics"
 cd "$PUBLIC_DIR" || { log "ERROR: cannot cd to $PUBLIC_DIR"; exit 1; }
 git add lucene-schedule.ics
-if git commit -m "Update schedule for week of $(cat "$PRIVATE_DIR/.last_week")"; then
-  if git push origin main; then
-    log "Public repo pushed successfully."
-  else
-    log "ERROR: public repo git push failed."
+if git diff --cached --quiet; then
+  log "WARN: nothing staged in public repo (unexpected, private copy just changed)."
+else
+  if ! git commit -m "Update schedule for week of $(cat "$PRIVATE_DIR/.last_week")"; then
+    log "ERROR: public repo git commit failed."
     exit 1
   fi
-else
-  log "WARN: nothing to commit in public repo (unexpected)."
+  if ! git push origin main; then
+    log "ERROR: public repo git push failed. Will retry on next run."
+    exit 1
+  fi
+  log "Public repo pushed successfully."
 fi
