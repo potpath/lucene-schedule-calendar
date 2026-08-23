@@ -108,6 +108,7 @@ python3 "$PRIVATE_DIR/build_input.py" "$IMG" > "$INPUT_NDJSON"
   --output-format stream-json \
   --verbose \
   --tools "" \
+  --strict-mcp-config \
   --json-schema "$SCHEMA" \
   < "$INPUT_NDJSON" > "$OUTPUT_NDJSON" 2>>"$PRIVATE_DIR/sync.log"
 
