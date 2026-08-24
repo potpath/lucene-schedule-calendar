@@ -16,7 +16,11 @@ RESULT_JSON="$PRIVATE_DIR/.last_sync_result.json"
 LAST_ETAG_PATH="$PRIVATE_DIR/.last_thumbnail_etag"
 LAST_HASH_PATH="$PRIVATE_DIR/.last_thumbnail_hash"
 
-SCHEMA='{"type":"object","properties":{"found_schedule":{"type":"boolean"},"week_monday":{"type":["string","null"]},"days":{"type":"array","items":{"type":"object","properties":{"day":{"type":"string","enum":["MON","TUE","WED","THU","FRI","SAT","SUN"]},"rest":{"type":"boolean"},"date":{"type":["string","null"]},"time":{"type":["string","null"]},"title":{"type":["string","null"]}},"required":["day","rest","date","time","title"]},"minItems":7,"maxItems":7},"notes":{"type":"string"}},"required":["found_schedule","week_monday","days","notes"]}'
+# A day carries a LIST of streams, not a single time/title: the graphic
+# sometimes puts two lives on one row (e.g. "17:00 | 20:30"). The HH:MM pattern
+# on time makes a merged "17:00 | 20:30" string fail extraction loudly instead
+# of reaching sync_apply.py and crashing it mid-run.
+SCHEMA='{"type":"object","properties":{"found_schedule":{"type":"boolean"},"week_monday":{"type":["string","null"]},"days":{"type":"array","items":{"type":"object","properties":{"day":{"type":"string","enum":["MON","TUE","WED","THU","FRI","SAT","SUN"]},"rest":{"type":"boolean"},"date":{"type":["string","null"]},"streams":{"type":"array","items":{"type":"object","properties":{"time":{"type":"string","pattern":"^([01][0-9]|2[0-3]):[0-5][0-9]$"},"title":{"type":"string"}},"required":["time","title"]}}},"required":["day","rest","date","streams"]},"minItems":7,"maxItems":7},"notes":{"type":"string"}},"required":["found_schedule","week_monday","days","notes"]}'
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
 
