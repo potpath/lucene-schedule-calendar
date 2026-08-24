@@ -66,4 +66,82 @@ LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
 TRANSP:TRANSPARENT
 END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-24@lucenech
+DTSTAMP:20260824T151641Z
+SEQUENCE:0
+DTSTART:20260824T100000Z
+DTEND:20260824T120000Z
+SUMMARY:[Lucene Ch.] Membership | ไปช่อง VinXIII
+DESCRIPTION:Membership | ไปช่อง VinXIII\nLocal time: 2026-08-24 17:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-24-2@lucenech
+DTSTAMP:20260824T151641Z
+SEQUENCE:0
+DTSTART:20260824T133000Z
+DTEND:20260824T153000Z
+SUMMARY:[Lucene Ch.] Membership | ไปช่อง VinXIII
+DESCRIPTION:Membership | ไปช่อง VinXIII\nLocal time: 2026-08-24 20:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-26@lucenech
+DTSTAMP:20260824T151641Z
+SEQUENCE:0
+DTSTART:20260826T150000Z
+DTEND:20260826T170000Z
+SUMMARY:[Lucene Ch.] Q&A วิธีจัดการกับความเครียด
+DESCRIPTION:Q&A วิธีจัดการกับความเครียด\nLocal time: 2026-08-26 22:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-27@lucenech
+DTSTAMP:20260824T151641Z
+SEQUENCE:0
+DTSTART:20260827T130000Z
+DTEND:20260827T150000Z
+SUMMARY:[Lucene Ch.] ไพ่ออราเคิลทำนายอนาคตคุณ
+DESCRIPTION:ไพ่ออราเคิลทำนายอนาคตคุณ\nLocal time: 2026-08-27 20:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-28@lucenech
+DTSTAMP:20260824T151641Z
+SEQUENCE:0
+DTSTART:20260828T150000Z
+DTEND:20260828T170000Z
+SUMMARY:[Lucene Ch.] KULO NIKU Bowl Up!
+DESCRIPTION:KULO NIKU Bowl Up!\nLocal time: 2026-08-28 22:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-08-30@lucenech
+DTSTAMP:20260824T151641Z
+SEQUENCE:0
+DTSTART:20260830T133000Z
+DTEND:20260830T153000Z
+SUMMARY:[Lucene Ch.] ร้องเพลง
+DESCRIPTION:ร้องเพลง\nLocal time: 2026-08-30 20:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
 END:VCALENDAR
