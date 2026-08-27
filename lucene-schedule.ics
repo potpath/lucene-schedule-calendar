@@ -120,12 +120,12 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:lucene-schedule-2026-08-28@lucenech
-DTSTAMP:20260827T154524Z
-SEQUENCE:2
+DTSTAMP:20260827T155613Z
+SEQUENCE:3
 DTSTART:20260828T150000Z
 DTEND:20260828T170000Z
-SUMMARY:[Lucene Ch.] KULC NIKU Bowl Up!
-DESCRIPTION:KULC NIKU Bowl Up!\nLocal time: 2026-08-28 22:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+SUMMARY:[Lucene Ch.] KULO NIKU Bowl Up!
+DESCRIPTION:KULO NIKU Bowl Up!\nLocal time: 2026-08-28 22:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
