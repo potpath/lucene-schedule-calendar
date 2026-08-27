@@ -107,7 +107,14 @@ fi
 log "Thumbnail changed, extracting schedule via claude (zero tool access - Read/Bash/network all disabled)..."
 python3 "$PRIVATE_DIR/build_input.py" "$IMG" > "$INPUT_NDJSON"
 
+# Pin the model explicitly: the scheduled run otherwise inherits whatever the
+# session default happens to be, and a run that fell through to Haiku produced
+# badly garbled OCR that had to be reverted by hand. Opus reads the stylized
+# logo lettering more faithfully than Sonnet (which misread "KULO" as "KULC"),
+# and low effort is plenty for what is a reading task, not a reasoning one.
 "$CLAUDE_BIN" -p \
+  --model claude-opus-5 \
+  --effort low \
   --input-format stream-json \
   --output-format stream-json \
   --verbose \
