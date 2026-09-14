@@ -13,7 +13,7 @@ Treat `public/` as a publish directory rather than a scratch space: anything add
 Add this URL to your calendar app (Google Calendar → Settings → Add calendar → From URL; Apple Calendar → File → New Calendar Subscription; Outlook → Add calendar → Subscribe from web):
 
 ```
-https://lucene-schedule.mana-ohm.workers.dev/lucene-schedule.ics
+https://lucene-schedule.hana-momo.workers.dev/lucene-schedule.ics
 ```
 
 (Served by the `lucene-schedule` Worker from this repo's `public/`. Pointing a custom domain at that Worker and publishing *that* URL instead would mean subscribers never have to re-add the calendar again if the host ever changes — the one thing a URL migration cannot be done gracefully for.)
