@@ -4,7 +4,7 @@
   // known_titles.txt sitting next to it in this (private) repo are cloned by
   // the builder and never served. That is what lets one private repo hold
   // both the machinery and the one file the public subscribes to.
-  "name": "lucene-schedule",
+  "name": "lucene",
   "compatibility_date": "2026-09-14",
   "assets": {
     "directory": "./public"
