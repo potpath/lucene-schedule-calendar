@@ -28,7 +28,9 @@ import sys
 from datetime import date, datetime, timedelta, timezone
 
 REPO_DIR = "$HOME/code/youtube/calendar"
-ICS_PATH = f"{REPO_DIR}/lucene-schedule.ics"
+# Lives under public/ because that directory is the Cloudflare Worker's asset
+# root: whatever is written here is what subscribers fetch.
+ICS_PATH = f"{REPO_DIR}/public/lucene-schedule.ics"
 LAST_WEEK_PATH = f"{REPO_DIR}/.last_week"
 SOURCE_VIDEO_URL = "https://www.youtube.com/watch?v=O4FtQpWRAB8"
 CHANNEL_LIVE_URL = "https://www.youtube.com/@LucenePLG/live"

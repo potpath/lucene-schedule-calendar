@@ -1,12 +1,13 @@
 #!/bin/bash
 # Checks Lucene Ch.'s reused "weekly schedule" video thumbnail for a new week,
-# and if found, updates lucene-schedule.ics (kept privately here for history)
-# and mirrors just that file to the public lucene-schedule-ics repo.
+# and if found, updates public/lucene-schedule.ics and pushes it. That path is
+# the asset root of the Cloudflare Worker that serves the calendar, so the push
+# is the publish - there is no separate public repo to mirror into, and this
+# repo stays private (its commit messages are never exposed).
 # Intended to run daily via launchd (see com.lucene.schedule-sync.plist).
 set -uo pipefail
 
 PRIVATE_DIR="$HOME/code/youtube/calendar"
-PUBLIC_DIR="$HOME/code/youtube/calendar-public"
 CLAUDE_BIN="/usr/local/bin/claude"
 VIDEO_ID="O4FtQpWRAB8"
 IMG="$PRIVATE_DIR/schedule.jpg"
@@ -36,7 +37,7 @@ fetch_etag() {
 # If a previous run committed locally but failed to push (network blip, auth
 # expiry, etc.), the commit sits ahead of origin and next time we'd otherwise
 # never look at it again (state on disk already says "synced"). So before
-# doing anything else, retry pushing any such leftover commits in both repos.
+# doing anything else, retry pushing any such leftover commits.
 # If a retry still fails, stop here rather than starting a fresh extraction
 # on top of an already-inconsistent repo.
 ensure_pushed() {
@@ -57,7 +58,6 @@ ensure_pushed() {
 }
 
 ensure_pushed "$PRIVATE_DIR"
-ensure_pushed "$PUBLIC_DIR"
 
 cd "$PRIVATE_DIR" || { log "ERROR: cannot cd to $PRIVATE_DIR"; exit 1; }
 git pull --ff-only origin main || log "WARN: git pull failed, continuing with local state"
@@ -130,6 +130,7 @@ fi
   --tools "" \
   --strict-mcp-config \
   --json-schema "$SCHEMA" \
+  --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": false}}' \
   < "$INPUT_NDJSON" > "$OUTPUT_NDJSON" 2>>"$PRIVATE_DIR/sync.log"
 
 tail -n 1 "$OUTPUT_NDJSON" > "$RESULT_JSON"
@@ -156,35 +157,18 @@ fi
 [ -n "$NEW_ETAG" ] && echo "$NEW_ETAG" > "$LAST_ETAG_PATH"
 echo "$NEW_HASH" > "$LAST_HASH_PATH"
 
-log "New week applied. Committing private repo (scripts/state/history)..."
-git add lucene-schedule.ics .last_week
+log "New week applied. Committing..."
+git add public/lucene-schedule.ics .last_week
 if git diff --cached --quiet; then
-  log "WARN: nothing staged in private repo (unexpected, sync_apply.py reported a change)."
+  log "WARN: nothing staged (unexpected, sync_apply.py reported a change)."
 else
   if ! git commit -m "Update schedule for week of $(cat .last_week)"; then
-    log "ERROR: private repo git commit failed."
+    log "ERROR: git commit failed."
     exit 1
   fi
   if ! git push origin main; then
-    log "ERROR: private repo git push failed. Will retry on next run."
+    log "ERROR: git push failed. Will retry on next run."
     exit 1
   fi
-fi
-
-log "Mirroring lucene-schedule.ics to public repo..."
-cp "$PRIVATE_DIR/lucene-schedule.ics" "$PUBLIC_DIR/lucene-schedule.ics"
-cd "$PUBLIC_DIR" || { log "ERROR: cannot cd to $PUBLIC_DIR"; exit 1; }
-git add lucene-schedule.ics
-if git diff --cached --quiet; then
-  log "WARN: nothing staged in public repo (unexpected, private copy just changed)."
-else
-  if ! git commit -m "Update schedule for week of $(cat "$PRIVATE_DIR/.last_week")"; then
-    log "ERROR: public repo git commit failed."
-    exit 1
-  fi
-  if ! git push origin main; then
-    log "ERROR: public repo git push failed. Will retry on next run."
-    exit 1
-  fi
-  log "Public repo pushed successfully."
+  log "Pushed. Cloudflare redeploys public/lucene-schedule.ics from this commit."
 fi
