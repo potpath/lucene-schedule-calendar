@@ -1,0 +1,30 @@
+# Exact spellings of stream titles this channel has used before, one per line.
+# Hand-maintained: nothing writes to this file automatically, on purpose.
+#
+# The schedule graphic draws some titles as stylized logo artwork whose small
+# print is only ~12px tall in the source thumbnail, which is not enough for the
+# extraction to be sure of every Thai character. Listing a recurring title here
+# pins its spelling. The trade-off is that the list is a strong prior: if the
+# channel deliberately changes one of these titles slightly, the extraction may
+# snap back to the spelling below, so remove or edit an entry when a show is
+# genuinely renamed.
+#
+# เน่ is the channel's own nickname (from ลูเซเน่ / Lucene) and is the character
+# most often misread - it has come back as พี่ and as แม่.
+ลุ้นดวงกับเน่
+เรื่องลี้ลับล่าสุดของเน่
+โปสการ์ดจากเน่ !
+หุ่นยนต์ลูเซเน่ พร้อมรับคำสั่งค่ะ
+ค่ำคืนนี้กับพี่สาวกระต่าย
+พี่สาวมาทักทายกันค่ะ
+ไพ่ออราเคิลทำนายอนาคตคุณ
+Q&A เส้นทางความฝัน
+Q&A เรื่องการงาน
+Q&A วิธีจัดการกับความเครียด
+Poly Flavor รับขนมเบื้องไส้ไหนดีคะ ?
+ไปช่อง VinXIII
+KULO NIKU Bowl Up!
+Umamusume Pretty Derby
+WALK OF LIFE
+Membership
+ร้องเพลง
