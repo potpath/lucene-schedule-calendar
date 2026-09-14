@@ -164,12 +164,12 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:lucene-schedule-2026-09-16@lucenech
-DTSTAMP:20260914T011524Z
-SEQUENCE:0
+DTSTAMP:20260914T021407Z
+SEQUENCE:1
 DTSTART:20260916T073000Z
 DTEND:20260916T093000Z
-SUMMARY:[Lucene Ch.] ลุ้นดวงกับพี่
-DESCRIPTION:ลุ้นดวงกับพี่\nLocal time: 2026-09-16 14:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+SUMMARY:[Lucene Ch.] ลุ้นดวงกับเน่
+DESCRIPTION:ลุ้นดวงกับเน่\nLocal time: 2026-09-16 14:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED

@@ -105,7 +105,16 @@ if [ "$NEW_HASH" = "$LAST_HASH" ]; then
 fi
 
 log "Thumbnail changed, extracting schedule via claude (zero tool access - Read/Bash/network all disabled)..."
-python3 "$PRIVATE_DIR/build_input.py" "$IMG" > "$INPUT_NDJSON"
+# build_input.py also crops and enlarges the schedule rows into a second
+# image (small stylized titles are misread at the thumbnail's native size),
+# so it can now fail in ways that used to be impossible - check it, rather
+# than handing claude a truncated/empty input and failing further downstream.
+if ! python3 "$PRIVATE_DIR/build_input.py" "$IMG" > "$INPUT_NDJSON" 2>>"$PRIVATE_DIR/sync.log"; then
+  log "ERROR: build_input.py could not prepare the extraction input (see sync.log)."
+  log "Not recording thumbnail ETag/hash, so this same thumbnail is retried next run."
+  rm -f "$IMG" "$INPUT_NDJSON"
+  exit 1
+fi
 
 # Pin the model explicitly: the scheduled run otherwise inherits whatever the
 # session default happens to be, and a run that fell through to Haiku produced
