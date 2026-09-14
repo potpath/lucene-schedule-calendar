@@ -1,6 +1,6 @@
 #!/bin/bash
 # Checks Lucene Ch.'s reused "weekly schedule" video thumbnail for a new week,
-# and if found, updates public/lucene-schedule.ics and pushes it. That path is
+# and if found, updates public/schedule.ics and pushes it. That path is
 # the asset root of the Cloudflare Worker that serves the calendar, so the push
 # is the publish - there is no separate public repo to mirror into, and this
 # repo stays private (its commit messages are never exposed).
@@ -158,7 +158,7 @@ fi
 echo "$NEW_HASH" > "$LAST_HASH_PATH"
 
 log "New week applied. Committing..."
-git add public/lucene-schedule.ics .last_week
+git add public/schedule.ics .last_week
 if git diff --cached --quiet; then
   log "WARN: nothing staged (unexpected, sync_apply.py reported a change)."
 else
@@ -170,5 +170,5 @@ else
     log "ERROR: git push failed. Will retry on next run."
     exit 1
   fi
-  log "Pushed. Cloudflare redeploys public/lucene-schedule.ics from this commit."
+  log "Pushed. Cloudflare redeploys public/schedule.ics from this commit."
 fi

@@ -3,7 +3,7 @@
 # calendar clients are picky about it. max-age is deliberately short: the
 # schedule can be edited mid-week, and subscribers should pick that up the
 # same day rather than holding a stale copy.
-/lucene-schedule.ics
+/schedule.ics
   Content-Type: text/calendar; charset=utf-8
   Cache-Control: public, max-age=3600
   Access-Control-Allow-Origin: *

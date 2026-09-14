@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Applies a structured schedule extraction (JSON, from `claude -p --json-schema`)
-to lucene-schedule.ics and .last_week.
+to public/schedule.ics and .last_week.
 
 A day can hold more than one stream: the graphic sometimes schedules two
 lives on the same row (e.g. "17:00 | 20:30"), and each becomes its own event.
@@ -30,7 +30,7 @@ from datetime import date, datetime, timedelta, timezone
 REPO_DIR = "$HOME/code/youtube/calendar"
 # Lives under public/ because that directory is the Cloudflare Worker's asset
 # root: whatever is written here is what subscribers fetch.
-ICS_PATH = f"{REPO_DIR}/public/lucene-schedule.ics"
+ICS_PATH = f"{REPO_DIR}/public/schedule.ics"
 LAST_WEEK_PATH = f"{REPO_DIR}/.last_week"
 SOURCE_VIDEO_URL = "https://www.youtube.com/watch?v=O4FtQpWRAB8"
 CHANNEL_LIVE_URL = "https://www.youtube.com/@LucenePLG/live"
@@ -180,7 +180,7 @@ def main():
                 f"ERROR: extracted week_monday {week_monday} is before the currently "
                 f"tracked week {last_week} - refusing to apply. This looks like a stale or "
                 f"cached thumbnail rather than a real update. Failing fast without "
-                f"touching .last_week or lucene-schedule.ics.",
+                f"touching .last_week or public/schedule.ics.",
                 file=sys.stderr,
             )
             sys.exit(1)
@@ -200,7 +200,7 @@ def main():
     # order matters beyond tidiness: a stream's slot index is what its UID is
     # built from, so sorting by start time keeps UIDs stable when the same week
     # gets re-extracted. Validate here rather than mid-write, so a malformed
-    # extraction fails before lucene-schedule.ics has been touched.
+    # extraction fails before public/schedule.ics has been touched.
     streams_by_day = {}
     for day in DAY_ORDER:
         row = days[day]
