@@ -2,20 +2,21 @@
 # Checks Lucene Ch.'s reused "weekly schedule" video thumbnail for a new week,
 # and if found, updates public/schedule.ics and pushes it. That path is
 # the asset root of the Cloudflare Worker that serves the calendar, so the push
-# is the publish - there is no separate public repo to mirror into, and this
-# repo stays private (its commit messages are never exposed).
+# is the publish - there is no separate public repo to mirror into.
 # Intended to run daily via launchd (see com.lucene.schedule-sync.plist).
 set -uo pipefail
 
-PRIVATE_DIR="$HOME/code/youtube/calendar"
-CLAUDE_BIN="/usr/local/bin/claude"
+# Resolve from this script's own location so a clone works wherever it sits;
+# CLAUDE_BIN falls back to whatever `claude` is on PATH.
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLAUDE_BIN="${CLAUDE_BIN:-$(command -v claude || echo claude)}"
 VIDEO_ID="O4FtQpWRAB8"
-IMG="$PRIVATE_DIR/schedule.jpg"
-INPUT_NDJSON="$PRIVATE_DIR/.last_sync_input.ndjson"
-OUTPUT_NDJSON="$PRIVATE_DIR/.last_sync_output.ndjson"
-RESULT_JSON="$PRIVATE_DIR/.last_sync_result.json"
-LAST_ETAG_PATH="$PRIVATE_DIR/.last_thumbnail_etag"
-LAST_HASH_PATH="$PRIVATE_DIR/.last_thumbnail_hash"
+IMG="$REPO_DIR/schedule.jpg"
+INPUT_NDJSON="$REPO_DIR/.last_sync_input.ndjson"
+OUTPUT_NDJSON="$REPO_DIR/.last_sync_output.ndjson"
+RESULT_JSON="$REPO_DIR/.last_sync_result.json"
+LAST_ETAG_PATH="$REPO_DIR/.last_thumbnail_etag"
+LAST_HASH_PATH="$REPO_DIR/.last_thumbnail_hash"
 
 # A day carries a LIST of streams, not a single time/title: the graphic
 # sometimes puts two lives on one row (e.g. "17:00 | 20:30"). The HH:MM pattern
@@ -43,7 +44,7 @@ fetch_etag() {
 ensure_pushed() {
   local dir="$1"
   cd "$dir" || { log "ERROR: cannot cd to $dir"; exit 1; }
-  git fetch origin main --quiet 2>>"$PRIVATE_DIR/sync.log"
+  git fetch origin main --quiet 2>>"$REPO_DIR/sync.log"
   local ahead
   ahead=$(git rev-list --count origin/main..HEAD 2>/dev/null || echo 0)
   if [ "$ahead" -gt 0 ]; then
@@ -57,9 +58,9 @@ ensure_pushed() {
   fi
 }
 
-ensure_pushed "$PRIVATE_DIR"
+ensure_pushed "$REPO_DIR"
 
-cd "$PRIVATE_DIR" || { log "ERROR: cannot cd to $PRIVATE_DIR"; exit 1; }
+cd "$REPO_DIR" || { log "ERROR: cannot cd to $REPO_DIR"; exit 1; }
 git pull --ff-only origin main || log "WARN: git pull failed, continuing with local state"
 
 log "Checking thumbnail ETag (cheap pre-check, no download)..."
@@ -109,7 +110,7 @@ log "Thumbnail changed, extracting schedule via claude (zero tool access - Read/
 # image (small stylized titles are misread at the thumbnail's native size),
 # so it can now fail in ways that used to be impossible - check it, rather
 # than handing claude a truncated/empty input and failing further downstream.
-if ! python3 "$PRIVATE_DIR/build_input.py" "$IMG" > "$INPUT_NDJSON" 2>>"$PRIVATE_DIR/sync.log"; then
+if ! python3 "$REPO_DIR/build_input.py" "$IMG" > "$INPUT_NDJSON" 2>>"$REPO_DIR/sync.log"; then
   log "ERROR: build_input.py could not prepare the extraction input (see sync.log)."
   log "Not recording thumbnail ETag/hash, so this same thumbnail is retried next run."
   rm -f "$IMG" "$INPUT_NDJSON"
@@ -131,11 +132,11 @@ fi
   --strict-mcp-config \
   --json-schema "$SCHEMA" \
   --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": false}}' \
-  < "$INPUT_NDJSON" > "$OUTPUT_NDJSON" 2>>"$PRIVATE_DIR/sync.log"
+  < "$INPUT_NDJSON" > "$OUTPUT_NDJSON" 2>>"$REPO_DIR/sync.log"
 
 tail -n 1 "$OUTPUT_NDJSON" > "$RESULT_JSON"
 
-python3 "$PRIVATE_DIR/sync_apply.py" "$RESULT_JSON"
+python3 "$REPO_DIR/sync_apply.py" "$RESULT_JSON"
 APPLY_STATUS=$?
 
 rm -f "$IMG" "$INPUT_NDJSON" "$OUTPUT_NDJSON" "$RESULT_JSON"

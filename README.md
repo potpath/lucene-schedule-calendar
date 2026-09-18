@@ -4,9 +4,11 @@ Auto-updating `.ics` calendar of [Lucene Ch.](https://www.youtube.com/@LucenePLG
 
 Source: the channel's pinned "Weekly Schedule" video, whose thumbnail is edited with the new week's lineup: https://www.youtube.com/watch?v=O4FtQpWRAB8
 
-This repo is **private** — its commit messages and scripts are never exposed — yet it also publishes the calendar, because `public/` is the asset root of a Cloudflare Worker (`wrangler.jsonc`) deployed on every push. `wrangler deploy` uploads *only* what is inside `public/`, so the sync scripts, run state (`.last_week`) and the hand-maintained title spelling list (`known_titles.txt`) sitting alongside it are cloned by the builder and never served. `public/schedule.ics` is therefore both the working copy and the published file; there is no second repo and no mirroring step.
+This repo both holds the machinery and publishes the calendar, because `public/` is the asset root of a Cloudflare Worker (`wrangler.jsonc`) deployed on every push. `wrangler deploy` uploads *only* what is inside `public/`, so the sync scripts, run state (`.last_week`) and the hand-maintained title spelling list (`known_titles.txt`) sitting alongside it are cloned by the builder and never served. `public/schedule.ics` is therefore both the working copy and the published file; there is no second repo and no mirroring step.
 
 Treat `public/` as a publish directory rather than a scratch space: anything added there becomes a public URL.
+
+The repo itself is public, so nothing here — code, comments, commit messages, run state — is private either. Keep credentials out of it entirely: `sync.sh` authenticates through the locally installed `claude` CLI and stores no key.
 
 ## Subscribe
 

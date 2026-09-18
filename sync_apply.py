@@ -23,11 +23,13 @@ Exit codes:
   1  - error (bad/missing schedule, malformed data, regression, etc.)
 """
 import json
+import os
 import re
 import sys
 from datetime import date, datetime, timedelta, timezone
 
-REPO_DIR = "$HOME/code/youtube/calendar"
+# The repo this script lives in, so a clone works wherever it is checked out.
+REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 # Lives under public/ because that directory is the Cloudflare Worker's asset
 # root: whatever is written here is what subscribers fetch.
 ICS_PATH = f"{REPO_DIR}/public/schedule.ics"
