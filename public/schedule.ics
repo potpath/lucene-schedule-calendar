@@ -5,59 +5,7 @@ CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Lucene Ch. Weekly Schedule
 X-WR-TIMEZONE:Asia/Bangkok
-X-WR-CALDESC:Weekly livestream schedule for Lucene Ch. (Lucene - Polygon Project VTuber), sourced from the pinned schedule video https://www.youtube.com/watch?v=O4FtQpWRAB8
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-01@lucenech
-DTSTAMP:20260902T011527Z
-SEQUENCE:0
-DTSTART:20260901T073000Z
-DTEND:20260901T093000Z
-SUMMARY:[Lucene Ch.] ลุ้นดวงกับเน่
-DESCRIPTION:ลุ้นดวงกับเน่\nLocal time: 2026-09-01 14:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-02@lucenech
-DTSTAMP:20260902T011527Z
-SEQUENCE:0
-DTSTART:20260902T140000Z
-DTEND:20260902T160000Z
-SUMMARY:[Lucene Ch.] เรื่องลี้ลับล่าสุดของเน่
-DESCRIPTION:เรื่องลี้ลับล่าสุดของเน่\nLocal time: 2026-09-02 21:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-04@lucenech
-DTSTAMP:20260902T011527Z
-SEQUENCE:0
-DTSTART:20260904T110000Z
-DTEND:20260904T130000Z
-SUMMARY:[Lucene Ch.] ร้องเพลง
-DESCRIPTION:ร้องเพลง\nLocal time: 2026-09-04 18:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-05@lucenech
-DTSTAMP:20260902T011527Z
-SEQUENCE:0
-DTSTART:20260905T113000Z
-DTEND:20260905T133000Z
-SUMMARY:[Lucene Ch.] Poly Flavor รับขนมเบื้องไส้ไหนดีคะ ?
-DESCRIPTION:Poly Flavor รับขนมเบื้องไส้ไหนดีคะ ?\nLocal time: 2026-09-05 18:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
+X-WR-CALDESC:Weekly livestream schedule for Lucene Ch. (Lucene - Polygon Project VTuber), sourced from the pinned schedule video https://www.youtube.com/watch?v=O4FtQpWRAB8 and, for weeks that video has not covered yet, from Polygon Project's weekly schedule for all its members
 BEGIN:VEVENT
 UID:lucene-schedule-2026-09-06@lucenech
 DTSTAMP:20260902T011527Z
@@ -222,6 +170,90 @@ DTSTART:20260920T113000Z
 DTEND:20260920T133000Z
 SUMMARY:[Lucene Ch.] หุ่นยนต์ลูเซเน่ พร้อมรับคำสั่งค่ะ
 DESCRIPTION:หุ่นยนต์ลูเซเน่ พร้อมรับคำสั่งค่ะ\nLocal time: 2026-09-20 18:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-09-21@lucenech
+DTSTAMP:20260920T133938Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
+DTSTART:20260921T123000Z
+DTEND:20260921T143000Z
+SUMMARY:[Lucene Ch.] Aniimo
+DESCRIPTION:Aniimo\nLocal time: 2026-09-21 19:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-09-23@lucenech
+DTSTAMP:20260920T133938Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
+DTSTART:20260923T110000Z
+DTEND:20260923T130000Z
+SUMMARY:[Lucene Ch.] Membership
+DESCRIPTION:Membership\nLocal time: 2026-09-23 18:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-09-23-2@lucenech
+DTSTAMP:20260920T133938Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
+DTSTART:20260923T150000Z
+DTEND:20260923T170000Z
+SUMMARY:[Lucene Ch.] พี่สาวกล่อมนอนหลับยามดึก
+DESCRIPTION:พี่สาวกล่อมนอนหลับยามดึก\nLocal time: 2026-09-23 22:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-09-24@lucenech
+DTSTAMP:20260920T133938Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
+DTSTART:20260924T130000Z
+DTEND:20260924T150000Z
+SUMMARY:[Lucene Ch.] Q&A สิ่งที่ไม่มั่นใจ
+DESCRIPTION:Q&A สิ่งที่ไม่มั่นใจ\nLocal time: 2026-09-24 20:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-09-25@lucenech
+DTSTAMP:20260920T133938Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
+DTSTART:20260925T110000Z
+DTEND:20260925T130000Z
+SUMMARY:[Lucene Ch.] ร้องเพลง
+DESCRIPTION:ร้องเพลง\nLocal time: 2026-09-25 18:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-09-27@lucenech
+DTSTAMP:20260920T133938Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
+DTSTART:20260927T140000Z
+DTEND:20260927T160000Z
+SUMMARY:[Lucene Ch.] กลับมาอีกครั้ง กับภารกิจปริศนา !
+DESCRIPTION:กลับมาอีกครั้ง กับภารกิจปริศนา !\nLocal time: 2026-09-27 21:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
