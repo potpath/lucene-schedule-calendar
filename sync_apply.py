@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 Applies a structured schedule extraction (JSON, from `claude -p --json-schema`)
-to public/schedule.ics and .last_week.
+to public/schedule.ics and the calling source's week marker.
 
-A day can hold more than one stream: the graphic sometimes schedules two
-lives on the same row (e.g. "17:00 | 20:30"), and each becomes its own event.
+A day can hold more than one stream: both graphics sometimes schedule two lives
+on the same day, and each becomes its own event.
 
 Every run reconciles all 7 days of the extracted week against whatever is
 currently published for those same dates - not just brand-new weeks. If a
@@ -14,12 +14,31 @@ removed accordingly. Streams whose content is identical to what's already
 published are left untouched (old DTSTAMP/SEQUENCE preserved) so the file
 only actually changes when something real changed.
 
-Usage: sync_apply.py <path-to-claude-output-json>
+Two sources feed this, and they are not equal (--source):
+
+  youtube  Lucene Ch.'s own pinned schedule video thumbnail. Authoritative:
+           it is her channel's own calendar and it is the one that gets edited
+           when a stream moves or is cancelled mid-week. It may write any week.
+  polygon  Polygon Project's weekly post, covering every member of the agency
+           for the coming week. It arrives first - usually a day or two before
+           the channel's thumbnail catches up - so it is what fills the next
+           week in early. It may only write a week the youtube source has not
+           published yet (exit 11 otherwise); once the channel's own thumbnail
+           covers a week, that week is the channel's and the agency post can no
+           longer overwrite it, however late it arrives.
+
+Each source keeps its own week marker, because for a couple of days each week
+they legitimately name different weeks: the agency posts on Sunday for the week
+starting the next day, and the channel's own thumbnail follows by Tuesday at the
+latest. Neither should read the other's progress as going backwards.
+
+Usage: sync_apply.py [--source youtube|polygon] <path-to-claude-output-json>
 
 Exit codes:
   0  - something changed (new/updated/removed event, or a stale prune) -
-       ics/last_week updated
+       ics/week marker updated
   10 - no changes at all - nothing to do
+  11 - this source may not write this week (see --source above) - not an error
   1  - error (bad/missing schedule, malformed data, regression, etc.)
 """
 import json
@@ -33,8 +52,26 @@ REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 # Lives under public/ because that directory is the Cloudflare Worker's asset
 # root: whatever is written here is what subscribers fetch.
 ICS_PATH = f"{REPO_DIR}/public/schedule.ics"
-LAST_WEEK_PATH = f"{REPO_DIR}/.last_week"
+# Per-source, deliberately: see the module docstring. .last_week keeps its
+# original name so the youtube source's history and commit messages carry over.
+LAST_WEEK_PATHS = {
+    "youtube": f"{REPO_DIR}/.last_week",
+    "polygon": f"{REPO_DIR}/.last_week_x",
+}
 SOURCE_VIDEO_URL = "https://www.youtube.com/watch?v=O4FtQpWRAB8"
+# What an event says about where its schedule came from. The agency post gets
+# no link on purpose: this .ics is a public file, and the addresses this
+# pipeline reads are kept out of it (they live in git-ignored local config -
+# see x_source.py). Naming the source without linking it is enough for a
+# subscriber, and within a day or two the video below covers that week anyway.
+SOURCE_ATTRIBUTION = {
+    "youtube": f"Schedule source: {SOURCE_VIDEO_URL}",
+    "polygon": ("Schedule source: Polygon Project's weekly schedule for all its members, "
+                "published ahead of Lucene Ch.'s own schedule video."),
+}
+# Recorded on every event so a reader (or a later run) can tell which graphic a
+# given day came from without digging through commits.
+SOURCE_FIELD = "X-SCHEDULE-SOURCE"
 CHANNEL_LIVE_URL = "https://www.youtube.com/@LucenePLG/live"
 BANGKOK = timezone(timedelta(hours=7))
 STREAM_DURATION = timedelta(hours=2)
@@ -67,7 +104,8 @@ def uid_for(local_date: str, index: int) -> str:
 
 
 def build_vevent(local_date: str, local_time: str, title: str, dtstamp: str,
-                 sequence: int, index: int, start_local: datetime, end_local: datetime) -> str:
+                 sequence: int, index: int, start_local: datetime, end_local: datetime,
+                 source: str) -> str:
     duration = end_local - start_local
     if duration == STREAM_DURATION:
         duration_note = "Duration is an estimate (2h), actual stream length may vary."
@@ -82,13 +120,14 @@ def build_vevent(local_date: str, local_time: str, title: str, dtstamp: str,
         f"{title}\n"
         f"Local time: {local_date} {local_time} GMT+7 (Asia/Bangkok).\n"
         f"{duration_note}\n"
-        f"Schedule source: {SOURCE_VIDEO_URL}"
+        f"{SOURCE_ATTRIBUTION[source]}"
     )
     return "\n".join([
         "BEGIN:VEVENT",
         f"UID:{uid_for(local_date, index)}",
         f"DTSTAMP:{dtstamp}",
         f"SEQUENCE:{sequence}",
+        f"{SOURCE_FIELD}:{source}",
         f"DTSTART:{utc_stamp(start_local)}",
         f"DTEND:{utc_stamp(end_local)}",
         f"SUMMARY:{summary}",
@@ -132,12 +171,43 @@ def parse_uid_key(uid):
     return m.group(1), (int(m.group(2)) - 1 if m.group(2) else 0)
 
 
-def main():
-    if len(sys.argv) != 2:
-        print("usage: sync_apply.py <claude-output-json-path>", file=sys.stderr)
+def read_last_week(source: str):
+    """The Monday a source last published, or None if it has published none."""
+    try:
+        with open(LAST_WEEK_PATHS[source], encoding="utf-8") as f:
+            raw = f.read().strip()
+    except FileNotFoundError:
+        return None
+    if not raw:
+        return None
+    try:
+        return date.fromisoformat(raw)
+    except ValueError:
+        print(f"ERROR: {LAST_WEEK_PATHS[source]} contains an unparseable date: {raw!r}",
+              file=sys.stderr)
         sys.exit(1)
 
-    with open(sys.argv[1], encoding="utf-8") as f:
+
+def parse_args(argv):
+    source, rest = "youtube", []
+    i = 0
+    while i < len(argv):
+        if argv[i] == "--source" and i + 1 < len(argv):
+            source, i = argv[i + 1], i + 2
+        else:
+            rest.append(argv[i])
+            i += 1
+    if len(rest) != 1 or source not in LAST_WEEK_PATHS:
+        print(f"usage: sync_apply.py [--source {'|'.join(LAST_WEEK_PATHS)}] "
+              f"<claude-output-json-path>", file=sys.stderr)
+        sys.exit(1)
+    return source, rest[0]
+
+
+def main():
+    source, result_path = parse_args(sys.argv[1:])
+
+    with open(result_path, encoding="utf-8") as f:
         envelope = json.load(f)
 
     if envelope.get("is_error"):
@@ -161,31 +231,37 @@ def main():
         print(f"ERROR: unparseable week_monday value: {week_monday!r}", file=sys.stderr)
         sys.exit(1)
 
-    try:
-        with open(LAST_WEEK_PATH, encoding="utf-8") as f:
-            last_week = f.read().strip()
-    except FileNotFoundError:
-        last_week = ""
-
-    # Only reject a week that's strictly BEFORE the one we're already tracking
-    # (a stale/cached thumbnail rolling us backwards). The same week as last
-    # time is expected and handled below - that's exactly how we detect a
+    # Only reject a week that's strictly BEFORE the one this source is already
+    # tracking (a stale/cached graphic rolling us backwards). The same week as
+    # last time is expected and handled below - that's exactly how we detect a
     # mid-week edit (time/topic change, or a stream getting cancelled).
-    if last_week:
-        try:
-            last_week_date = date.fromisoformat(last_week)
-        except ValueError:
-            print(f"ERROR: .last_week contains an unparseable date: {last_week!r}", file=sys.stderr)
-            sys.exit(1)
-        if week_monday_date < last_week_date:
+    last_week_date = read_last_week(source)
+    if last_week_date is not None and week_monday_date < last_week_date:
+        print(
+            f"ERROR: extracted week_monday {week_monday} is before the week {last_week_date} "
+            f"the {source} source is already tracking - refusing to apply. This looks like a "
+            f"stale or cached graphic rather than a real update. Failing fast without "
+            f"touching {LAST_WEEK_PATHS[source]} or public/schedule.ics.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # The agency post is the early source, not the accurate one: once the
+    # channel's own thumbnail has published a week, that week's times and
+    # titles are the channel's to change, and an agency post that says
+    # otherwise is out of date rather than newer. Compare against the week the
+    # youtube source last published rather than against the published events,
+    # so that a week the channel genuinely scheduled as all-rest (no events at
+    # all) still counts as covered.
+    if source == "polygon":
+        golden_week = read_last_week("youtube")
+        if golden_week is not None and week_monday_date <= golden_week:
             print(
-                f"ERROR: extracted week_monday {week_monday} is before the currently "
-                f"tracked week {last_week} - refusing to apply. This looks like a stale or "
-                f"cached thumbnail rather than a real update. Failing fast without "
-                f"touching .last_week or public/schedule.ics.",
-                file=sys.stderr,
+                f"Week {week_monday} is already published from the channel's own schedule "
+                f"video (which is tracking {golden_week}), so the agency post cannot "
+                f"overwrite it. Nothing to do."
             )
-            sys.exit(1)
+            sys.exit(11)
 
     days = {d["day"]: d for d in data.get("days", [])}
     missing = [d for d in DAY_ORDER if d not in days]
@@ -331,11 +407,17 @@ def main():
             summary = esc(f"[Lucene Ch.] {title}")
             old_block = existing_by_slot.get((expected_date_str, index))
 
+            # The source is part of the comparison, not just the times and the
+            # title: when the channel's thumbnail takes over a week the agency
+            # post filled in, the event may be identical in every visible way,
+            # but its DESCRIPTION still credits the agency post. Rewriting it
+            # keeps that attribution honest.
             unchanged = (
                 old_block is not None
                 and parse_field(old_block, "DTSTART") == utc_stamp(start_local)
                 and parse_field(old_block, "DTEND") == utc_stamp(end_local)
                 and parse_field(old_block, "SUMMARY") == summary
+                and parse_field(old_block, SOURCE_FIELD) == source
             )
 
             if unchanged:
@@ -344,7 +426,7 @@ def main():
                 sequence = parse_sequence(old_block) + 1 if old_block is not None else 0
                 week_blocks.append(build_vevent(
                     expected_date_str, time_str, title, dtstamp, sequence, index,
-                    start_local, end_local,
+                    start_local, end_local, source,
                 ))
                 if old_block is not None:
                     updated += 1
@@ -358,17 +440,17 @@ def main():
         new_ics = header.rstrip("\n") + "\nEND:VCALENDAR\n"
 
     if new_ics == ics_text:
-        print(f"No changes for week {week_monday} (already in sync).")
+        print(f"No changes for week {week_monday} from {source} (already in sync).")
         sys.exit(10)
 
     with open(ICS_PATH, "w", encoding="utf-8") as f:
         f.write(new_ics)
 
-    with open(LAST_WEEK_PATH, "w", encoding="utf-8") as f:
+    with open(LAST_WEEK_PATHS[source], "w", encoding="utf-8") as f:
         f.write(week_monday + "\n")
 
     print(
-        f"Synced week {week_monday}: {added} added, {updated} updated, "
+        f"Synced week {week_monday} from {source}: {added} added, {updated} updated, "
         f"{removed} removed (rest or dropped), {pruned} pruned (stale), "
         f"{multi_stream_days} day(s) with more than one stream, "
         f"{len(all_blocks)} total event(s)."

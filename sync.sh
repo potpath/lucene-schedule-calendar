@@ -1,9 +1,16 @@
 #!/bin/bash
-# Checks Lucene Ch.'s reused "weekly schedule" video thumbnail for a new week,
-# and if found, updates public/schedule.ics and pushes it. That path is
+# Keeps public/schedule.ics in step with Lucene Ch.'s published schedule, from
+# two sources: her channel's reused "weekly schedule" video thumbnail, and
+# Polygon Project's weekly post covering every member of the agency. public/ is
 # the asset root of the Cloudflare Worker that serves the calendar, so the push
 # is the publish - there is no separate public repo to mirror into.
 # Intended to run daily via launchd (see com.lucene.schedule-sync.plist).
+#
+# The channel's own thumbnail is authoritative and the agency post is early:
+# see sync_apply.py's module docstring for the precedence rule. Both sources
+# are checked every run, cheaply gated so that the expensive step - the claude
+# extraction - only happens when that source has published something new, and
+# both feed the same commit at the end.
 set -uo pipefail
 
 # Resolve from this script's own location so a clone works wherever it sits;
@@ -12,17 +19,18 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_BIN="${CLAUDE_BIN:-$(command -v claude || echo claude)}"
 VIDEO_ID="O4FtQpWRAB8"
 IMG="$REPO_DIR/schedule.jpg"
-INPUT_NDJSON="$REPO_DIR/.last_sync_input.ndjson"
-OUTPUT_NDJSON="$REPO_DIR/.last_sync_output.ndjson"
-RESULT_JSON="$REPO_DIR/.last_sync_result.json"
 LAST_ETAG_PATH="$REPO_DIR/.last_thumbnail_etag"
 LAST_HASH_PATH="$REPO_DIR/.last_thumbnail_hash"
+LAST_X_STATUS_PATH="$REPO_DIR/.last_x_status"
 
 # A day carries a LIST of streams, not a single time/title: the graphic
 # sometimes puts two lives on one row (e.g. "17:00 | 20:30"). The HH:MM pattern
 # on time makes a merged "17:00 | 20:30" string fail extraction loudly instead
 # of reaching sync_apply.py and crashing it mid-run.
 SCHEMA='{"type":"object","properties":{"found_schedule":{"type":"boolean"},"week_monday":{"type":["string","null"]},"days":{"type":"array","items":{"type":"object","properties":{"day":{"type":"string","enum":["MON","TUE","WED","THU","FRI","SAT","SUN"]},"rest":{"type":"boolean"},"date":{"type":["string","null"]},"streams":{"type":"array","items":{"type":"object","properties":{"time":{"type":"string","pattern":"^([01][0-9]|2[0-3]):[0-5][0-9]$"},"title":{"type":"string"}},"required":["time","title"]}}},"required":["day","rest","date","streams"]},"minItems":7,"maxItems":7},"notes":{"type":"string"}},"required":["found_schedule","week_monday","days","notes"]}'
+
+# Weeks applied this run, for the commit message.
+APPLIED_WEEKS=()
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
 
@@ -58,118 +66,229 @@ ensure_pushed() {
   fi
 }
 
+# OCRs one schedule graphic into structured JSON and applies it. Shared by both
+# sources; everything source-specific is in the --source prompt and the
+# precedence rule downstream.
+# Usage: extract_and_apply <tag> <image> --source <name>
+# Returns sync_apply.py's exit status (0 changed, 10 unchanged, 11 not this
+# source's week to write, anything else an error).
+extract_and_apply() {
+  local tag="$1" img="$2"; shift 2
+  local source_args=("$@")
+
+  local input="$REPO_DIR/.last_sync_input_${tag}.ndjson"
+  local output="$REPO_DIR/.last_sync_output_${tag}.ndjson"
+  local result="$REPO_DIR/.last_sync_result_${tag}.json"
+
+  # build_input.py also crops and enlarges the schedule rows into a second
+  # image (small stylized titles are misread at the thumbnail's native size),
+  # so it can now fail in ways that used to be impossible - check it, rather
+  # than handing claude a truncated/empty input and failing further downstream.
+  if ! python3 "$REPO_DIR/build_input.py" "${source_args[@]}" "$img" > "$input" 2>>"$REPO_DIR/sync.log"; then
+    log "ERROR: build_input.py could not prepare the $tag extraction input (see sync.log)."
+    rm -f "$input"
+    return 1
+  fi
+
+  # Pin the model explicitly: the scheduled run otherwise inherits whatever the
+  # session default happens to be, and a run that fell through to Haiku produced
+  # badly garbled OCR that had to be reverted by hand. Opus reads the stylized
+  # logo lettering more faithfully than Sonnet (which misread "KULO" as "KULC"),
+  # and low effort is plenty for what is a reading task, not a reasoning one.
+  "$CLAUDE_BIN" -p \
+    --model claude-opus-5 \
+    --effort low \
+    --input-format stream-json \
+    --output-format stream-json \
+    --verbose \
+    --tools "" \
+    --strict-mcp-config \
+    --json-schema "$SCHEMA" \
+    --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": false}}' \
+    < "$input" > "$output" 2>>"$REPO_DIR/sync.log"
+
+  tail -n 1 "$output" > "$result"
+
+  python3 "$REPO_DIR/sync_apply.py" "${source_args[@]}" "$result"
+  local status=$?
+
+  rm -f "$input" "$output" "$result"
+  return $status
+}
+
+# Records a week for the commit message. Callers pass the marker file they
+# wrote, so a caller with its own marker still ends up in the same commit.
+record_applied_week() {
+  APPLIED_WEEKS+=("$(cat "$1")")
+}
+
+# Polygon Project's weekly post - the early source. It goes up on Sunday for the
+# week starting the next day, a day or two before the channel's own thumbnail
+# follows, and that head start is the whole of what this source adds.
+# x_source.py reads its endpoints from git-ignored local config and reports
+# "not configured" (exit 10) when that is absent, so a fresh clone of this
+# public repo simply runs the thumbnail source and nothing breaks.
+sync_polygon() {
+  local img="$REPO_DIR/polygon.jpg"
+  local meta_path="$REPO_DIR/.last_x_meta.json"
+  local last_status=""
+  [ -f "$LAST_X_STATUS_PATH" ] && last_status=$(cat "$LAST_X_STATUS_PATH")
+
+  log "Checking the agency account for a newer weekly schedule post..."
+  # One status id is all that comes out of the third-party mirror this uses to
+  # find the post; the post itself and its image come from the platform's own
+  # endpoint. See x_source.py.
+  python3 "$REPO_DIR/x_source.py" --skip-status "$last_status" "$img" > "$meta_path" 2>>"$REPO_DIR/sync.log"
+  local discover_status=$?
+  if [ "$discover_status" -ne 0 ]; then
+    rm -f "$img" "$meta_path"
+    if [ "$discover_status" -eq 10 ]; then
+      log "No new schedule post to read (see sync.log). Skipping claude call."
+      return 10
+    fi
+    log "ERROR: could not fetch the latest schedule post (see sync.log)."
+    return 1
+  fi
+
+  local status_id
+  status_id=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["status_id"])' "$meta_path")
+  rm -f "$meta_path"
+  if [ -z "$status_id" ]; then
+    log "ERROR: x_source.py did not report a usable post."
+    rm -f "$img"
+    return 1
+  fi
+
+  log "New schedule post $status_id, extracting Lucene's row via claude (zero tool access)..."
+  extract_and_apply polygon "$img" --source polygon
+  local status=$?
+  rm -f "$img"
+
+  if [ "$status" -ne 0 ] && [ "$status" -ne 10 ] && [ "$status" -ne 11 ]; then
+    log "Not recording status $status_id, so this same post is retried next run."
+    return $status
+  fi
+
+  # Recorded for exit 11 too: "the channel's own thumbnail already covers this
+  # week" will not stop being true later, so re-OCRing this post daily until
+  # the next one appears would only burn calls.
+  echo "$status_id" > "$LAST_X_STATUS_PATH"
+  [ "$status" -eq 0 ] && record_applied_week "$REPO_DIR/.last_week_x"
+  return $status
+}
+
+# Lucene Ch.'s own pinned schedule video thumbnail - the authoritative source.
+sync_thumbnail() {
+  log "Checking thumbnail ETag (cheap pre-check, no download)..."
+  local new_etag last_etag=""
+  new_etag=$(fetch_etag "https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg")
+  [ -z "$new_etag" ] && new_etag=$(fetch_etag "https://i.ytimg.com/vi/${VIDEO_ID}/hqdefault.jpg")
+  [ -f "$LAST_ETAG_PATH" ] && last_etag=$(cat "$LAST_ETAG_PATH")
+
+  if [ -n "$new_etag" ] && [ "$new_etag" = "$last_etag" ]; then
+    log "Thumbnail ETag unchanged ($new_etag) - YouTube hasn't touched it since last run. Skipping download and claude call."
+    return 10
+  fi
+  [ -z "$new_etag" ] && log "WARN: could not read an ETag from either thumbnail size, falling back to download+hash check."
+
+  log "Downloading schedule thumbnail..."
+  if ! curl -sL --fail "https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg" -o "$IMG"; then
+    log "maxresdefault failed, trying hqdefault..."
+    if ! curl -sL --fail "https://i.ytimg.com/vi/${VIDEO_ID}/hqdefault.jpg" -o "$IMG"; then
+      log "ERROR: could not download schedule thumbnail (both sizes failed)"
+      return 1
+    fi
+  fi
+
+  if ! file "$IMG" | grep -qi "image"; then
+    log "ERROR: downloaded file is not an image"
+    rm -f "$IMG"
+    return 1
+  fi
+
+  # Second gate, on actual bytes: catches the case where the CDN reissued a new
+  # ETag (e.g. re-encode/reprocess) without the visible content actually
+  # changing. Skipping claude here also avoids feeding it the same image twice,
+  # which would risk non-deterministic OCR output on an unchanged thumbnail.
+  local new_hash last_hash=""
+  new_hash=$(shasum -a 256 "$IMG" | awk '{print $1}')
+  [ -f "$LAST_HASH_PATH" ] && last_hash=$(cat "$LAST_HASH_PATH")
+
+  if [ "$new_hash" = "$last_hash" ]; then
+    log "Thumbnail bytes unchanged (hash $new_hash) even though the ETag differed - skipping claude call."
+    rm -f "$IMG"
+    [ -n "$new_etag" ] && echo "$new_etag" > "$LAST_ETAG_PATH"
+    return 10
+  fi
+
+  log "Thumbnail changed, extracting schedule via claude (zero tool access - Read/Bash/network all disabled)..."
+  extract_and_apply thumbnail "$IMG" --source youtube
+  local status=$?
+  rm -f "$IMG"
+
+  if [ "$status" -ne 0 ] && [ "$status" -ne 10 ]; then
+    log "ERROR: extraction failed for this thumbnail (exit $status), leaving the calendar untouched."
+    log "Not recording thumbnail ETag/hash, so this same thumbnail is retried next run."
+    return $status
+  fi
+
+  # Only now, once claude successfully parsed this exact image, do we record it
+  # as "seen" - a failed/errored run above deliberately skips this so the same
+  # thumbnail gets retried next time instead of being silently skipped forever.
+  [ -n "$new_etag" ] && echo "$new_etag" > "$LAST_ETAG_PATH"
+  echo "$new_hash" > "$LAST_HASH_PATH"
+  [ "$status" -eq 0 ] && record_applied_week "$REPO_DIR/.last_week"
+  return $status
+}
+
 ensure_pushed "$REPO_DIR"
 
 cd "$REPO_DIR" || { log "ERROR: cannot cd to $REPO_DIR"; exit 1; }
 git pull --ff-only origin main || log "WARN: git pull failed, continuing with local state"
 
-log "Checking thumbnail ETag (cheap pre-check, no download)..."
-NEW_ETAG=$(fetch_etag "https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg")
-[ -z "$NEW_ETAG" ] && NEW_ETAG=$(fetch_etag "https://i.ytimg.com/vi/${VIDEO_ID}/hqdefault.jpg")
+# The authoritative source goes first: it sets the week marker that decides
+# whether the agency post is still allowed to write the same week at all.
+FAILED=0
+sync_thumbnail
+case $? in
+  0|10) ;;
+  *) FAILED=1; log "ERROR: the thumbnail source failed; continuing with the agency post." ;;
+esac
 
-LAST_ETAG=""
-[ -f "$LAST_ETAG_PATH" ] && LAST_ETAG=$(cat "$LAST_ETAG_PATH")
+sync_polygon
+case $? in
+  0|10|11) ;;
+  *) FAILED=1; log "ERROR: the agency post source failed." ;;
+esac
 
-if [ -n "$NEW_ETAG" ] && [ "$NEW_ETAG" = "$LAST_ETAG" ]; then
-  log "Thumbnail ETag unchanged ($NEW_ETAG) - YouTube hasn't touched it since last run. Skipping download and claude call."
-  exit 0
-fi
-[ -z "$NEW_ETAG" ] && log "WARN: could not read an ETag from either thumbnail size, falling back to download+hash check."
-
-log "Downloading schedule thumbnail..."
-if ! curl -sL --fail "https://i.ytimg.com/vi/${VIDEO_ID}/maxresdefault.jpg" -o "$IMG"; then
-  log "maxresdefault failed, trying hqdefault..."
-  if ! curl -sL --fail "https://i.ytimg.com/vi/${VIDEO_ID}/hqdefault.jpg" -o "$IMG"; then
-    log "ERROR: could not download schedule thumbnail (both sizes failed)"
-    exit 1
-  fi
-fi
-
-if ! file "$IMG" | grep -qi "image"; then
-  log "ERROR: downloaded file is not an image"
-  exit 1
-fi
-
-# Second gate, on actual bytes: catches the case where the CDN reissued a new
-# ETag (e.g. re-encode/reprocess) without the visible content actually
-# changing. Skipping claude here also avoids feeding it the same image twice,
-# which would risk non-deterministic OCR output on an unchanged thumbnail.
-NEW_HASH=$(shasum -a 256 "$IMG" | awk '{print $1}')
-LAST_HASH=""
-[ -f "$LAST_HASH_PATH" ] && LAST_HASH=$(cat "$LAST_HASH_PATH")
-
-if [ "$NEW_HASH" = "$LAST_HASH" ]; then
-  log "Thumbnail bytes unchanged (hash $NEW_HASH) even though the ETag differed - skipping claude call."
-  rm -f "$IMG"
-  [ -n "$NEW_ETAG" ] && echo "$NEW_ETAG" > "$LAST_ETAG_PATH"
-  exit 0
-fi
-
-log "Thumbnail changed, extracting schedule via claude (zero tool access - Read/Bash/network all disabled)..."
-# build_input.py also crops and enlarges the schedule rows into a second
-# image (small stylized titles are misread at the thumbnail's native size),
-# so it can now fail in ways that used to be impossible - check it, rather
-# than handing claude a truncated/empty input and failing further downstream.
-if ! python3 "$REPO_DIR/build_input.py" "$IMG" > "$INPUT_NDJSON" 2>>"$REPO_DIR/sync.log"; then
-  log "ERROR: build_input.py could not prepare the extraction input (see sync.log)."
-  log "Not recording thumbnail ETag/hash, so this same thumbnail is retried next run."
-  rm -f "$IMG" "$INPUT_NDJSON"
-  exit 1
-fi
-
-# Pin the model explicitly: the scheduled run otherwise inherits whatever the
-# session default happens to be, and a run that fell through to Haiku produced
-# badly garbled OCR that had to be reverted by hand. Opus reads the stylized
-# logo lettering more faithfully than Sonnet (which misread "KULO" as "KULC"),
-# and low effort is plenty for what is a reading task, not a reasoning one.
-"$CLAUDE_BIN" -p \
-  --model claude-opus-5 \
-  --effort low \
-  --input-format stream-json \
-  --output-format stream-json \
-  --verbose \
-  --tools "" \
-  --strict-mcp-config \
-  --json-schema "$SCHEMA" \
-  --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": false}}' \
-  < "$INPUT_NDJSON" > "$OUTPUT_NDJSON" 2>>"$REPO_DIR/sync.log"
-
-tail -n 1 "$OUTPUT_NDJSON" > "$RESULT_JSON"
-
-python3 "$REPO_DIR/sync_apply.py" "$RESULT_JSON"
-APPLY_STATUS=$?
-
-rm -f "$IMG" "$INPUT_NDJSON" "$OUTPUT_NDJSON" "$RESULT_JSON"
-
-if [ "$APPLY_STATUS" -eq 10 ]; then
+if [ ${#APPLIED_WEEKS[@]} -eq 0 ]; then
   log "No schedule changes. Done."
-  [ -n "$NEW_ETAG" ] && echo "$NEW_ETAG" > "$LAST_ETAG_PATH"
-  echo "$NEW_HASH" > "$LAST_HASH_PATH"
-  exit 0
-elif [ "$APPLY_STATUS" -ne 0 ]; then
-  log "ERROR: sync_apply.py failed (exit $APPLY_STATUS), leaving repos untouched."
-  log "Not recording thumbnail ETag/hash, so this same thumbnail is retried next run."
-  exit 1
+  exit $FAILED
 fi
-
-# Only now, once claude successfully parsed this exact image, do we record it
-# as "seen" - a failed/errored run above deliberately skips this so the same
-# thumbnail gets retried next time instead of being silently skipped forever.
-[ -n "$NEW_ETAG" ] && echo "$NEW_ETAG" > "$LAST_ETAG_PATH"
-echo "$NEW_HASH" > "$LAST_HASH_PATH"
 
 log "New week applied. Committing..."
-git add public/schedule.ics .last_week
+# One missing pathspec makes git add reject the whole call, so each marker is
+# only staged once it exists.
+git add public/schedule.ics
+for marker in .last_week .last_week_x; do
+  [ -f "$REPO_DIR/$marker" ] && git add "$marker"
+done
 if git diff --cached --quiet; then
   log "WARN: nothing staged (unexpected, sync_apply.py reported a change)."
-else
-  if ! git commit -m "Update schedule for week of $(cat .last_week)"; then
-    log "ERROR: git commit failed."
-    exit 1
-  fi
-  if ! git push origin main; then
-    log "ERROR: git push failed. Will retry on next run."
-    exit 1
-  fi
-  log "Pushed. Cloudflare redeploys public/schedule.ics from this commit."
+  exit $FAILED
 fi
+
+MESSAGE="Update schedule for week of ${APPLIED_WEEKS[0]}"
+for week in "${APPLIED_WEEKS[@]:1}"; do
+  MESSAGE="$MESSAGE and week of $week"
+done
+if ! git commit -m "$MESSAGE"; then
+  log "ERROR: git commit failed."
+  exit 1
+fi
+if ! git push origin main; then
+  log "ERROR: git push failed. Will retry on next run."
+  exit 1
+fi
+log "Pushed. Cloudflare redeploys public/schedule.ics from this commit."
+exit $FAILED

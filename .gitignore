@@ -1,8 +1,14 @@
 schedule.jpg
-.last_sync_input.ndjson
-.last_sync_output.ndjson
-.last_sync_result.json
+polygon.jpg
+.last_sync_input_*.ndjson
+.last_sync_output_*.ndjson
+.last_sync_result_*.json
 .last_thumbnail_etag
 .last_thumbnail_hash
+.last_x_status
+.last_x_meta.json
+# Endpoint URLs for the agency-post source. The repo and the calendar it
+# publishes are public; the addresses this pipeline reads are not.
+local/
 sync.log
 .DS_Store

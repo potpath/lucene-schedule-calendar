@@ -11,6 +11,11 @@
 #
 # เน่ is the channel's own nickname (from ลูเซเน่ / Lucene) and is the character
 # most often misread - it has come back as พี่ and as แม่.
+#
+# Entries are matched ignoring letter case, and the capitalisation written here
+# wins over the artwork's. That is what keeps the two sources from spelling the
+# same show differently: the agency's grid draws an all-caps "MEMBERSHIP" badge
+# where the channel's own thumbnail writes "Membership".
 ลุ้นดวงกับเน่
 เรื่องลี้ลับล่าสุดของเน่
 โปสการ์ดจากเน่ !
@@ -25,6 +30,7 @@ Poly Flavor รับขนมเบื้องไส้ไหนดีคะ ?
 ไปช่อง VinXIII
 KULO NIKU Bowl Up!
 Umamusume Pretty Derby
+Aniimo
 WALK OF LIFE
 Membership
 ร้องเพลง
