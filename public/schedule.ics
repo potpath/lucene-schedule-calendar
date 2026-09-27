@@ -7,97 +7,6 @@ X-WR-CALNAME:Lucene Ch. Weekly Schedule
 X-WR-TIMEZONE:Asia/Bangkok
 X-WR-CALDESC:Weekly livestream schedule for Lucene Ch. (Lucene - Polygon Project VTuber), sourced from the pinned schedule video https://www.youtube.com/watch?v=O4FtQpWRAB8 and, for weeks that video has not covered yet, from Polygon Project's weekly schedule for all its members
 BEGIN:VEVENT
-UID:lucene-schedule-2026-09-06@lucenech
-DTSTAMP:20260902T011527Z
-SEQUENCE:0
-DTSTART:20260906T150000Z
-DTEND:20260906T170000Z
-SUMMARY:[Lucene Ch.] Umamusume Pretty Derby
-DESCRIPTION:Umamusume Pretty Derby\nLocal time: 2026-09-06 22:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-08@lucenech
-DTSTAMP:20260906T165608Z
-SEQUENCE:0
-DTSTART:20260908T100000Z
-DTEND:20260908T120000Z
-SUMMARY:[Lucene Ch.] Umamusume Pretty Derby
-DESCRIPTION:Umamusume Pretty Derby\nLocal time: 2026-09-08 17:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-08-2@lucenech
-DTSTAMP:20260906T165608Z
-SEQUENCE:0
-DTSTART:20260908T150000Z
-DTEND:20260908T170000Z
-SUMMARY:[Lucene Ch.] Membership
-DESCRIPTION:Membership\nLocal time: 2026-09-08 22:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-09@lucenech
-DTSTAMP:20260906T165608Z
-SEQUENCE:0
-DTSTART:20260909T140000Z
-DTEND:20260909T160000Z
-SUMMARY:[Lucene Ch.] Q&A เส้นทางความฝัน
-DESCRIPTION:Q&A เส้นทางความฝัน\nLocal time: 2026-09-09 21:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-10@lucenech
-DTSTAMP:20260906T165608Z
-SEQUENCE:0
-DTSTART:20260910T120000Z
-DTEND:20260910T140000Z
-SUMMARY:[Lucene Ch.] ร้องเพลง
-DESCRIPTION:ร้องเพลง\nLocal time: 2026-09-10 19:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-11@lucenech
-DTSTAMP:20260906T165608Z
-SEQUENCE:0
-DTSTART:20260911T123000Z
-DTEND:20260911T143000Z
-SUMMARY:[Lucene Ch.] โปสการ์ดจากเน่ !
-DESCRIPTION:โปสการ์ดจากเน่ !\nLocal time: 2026-09-11 19:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
-UID:lucene-schedule-2026-09-13@lucenech
-DTSTAMP:20260906T165608Z
-SEQUENCE:0
-DTSTART:20260913T150000Z
-DTEND:20260913T170000Z
-SUMMARY:[Lucene Ch.] ค่ำคืนนี้กับพี่สาวกระต่าย
-DESCRIPTION:ค่ำคืนนี้กับพี่สาวกระต่าย\nLocal time: 2026-09-13 22:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:lucene-schedule-2026-09-14@lucenech
 DTSTAMP:20260914T011524Z
 SEQUENCE:0
@@ -254,6 +163,90 @@ DTSTART:20260927T140000Z
 DTEND:20260927T160000Z
 SUMMARY:[Lucene Ch.] กลับมาอีกครั้ง กับภารกิจปริศนา !
 DESCRIPTION:กลับมาอีกครั้ง กับภารกิจปริศนา !\nLocal time: 2026-09-27 21:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-09-28@lucenech
+DTSTAMP:20260927T171643Z
+SEQUENCE:0
+X-SCHEDULE-SOURCE:polygon
+DTSTART:20260928T110000Z
+DTEND:20260928T130000Z
+SUMMARY:[Lucene Ch.] ร้องเพลง
+DESCRIPTION:ร้องเพลง\nLocal time: 2026-09-28 18:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-09-29@lucenech
+DTSTAMP:20260927T171643Z
+SEQUENCE:0
+X-SCHEDULE-SOURCE:polygon
+DTSTART:20260929T140000Z
+DTEND:20260929T160000Z
+SUMMARY:[Lucene Ch.] เกมการ์ดเป่ายิ้งฉุบกับเน่
+DESCRIPTION:เกมการ์ดเป่ายิ้งฉุบกับเน่\nLocal time: 2026-09-29 21:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-10-01@lucenech
+DTSTAMP:20260927T171643Z
+SEQUENCE:0
+X-SCHEDULE-SOURCE:polygon
+DTSTART:20261001T073000Z
+DTEND:20261001T093000Z
+SUMMARY:[Lucene Ch.] ลุ้นดวงกับเน่
+DESCRIPTION:ลุ้นดวงกับเน่\nLocal time: 2026-10-01 14:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-10-01-2@lucenech
+DTSTAMP:20260927T171643Z
+SEQUENCE:0
+X-SCHEDULE-SOURCE:polygon
+DTSTART:20261001T120000Z
+DTEND:20261001T140000Z
+SUMMARY:[Lucene Ch.] ???
+DESCRIPTION:???\nLocal time: 2026-10-01 19:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-10-02@lucenech
+DTSTAMP:20260927T171643Z
+SEQUENCE:0
+X-SCHEDULE-SOURCE:polygon
+DTSTART:20261002T090000Z
+DTEND:20261002T110000Z
+SUMMARY:[Lucene Ch.] Aniimo
+DESCRIPTION:Aniimo\nLocal time: 2026-10-02 16:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+URL:https://www.youtube.com/@LucenePLG/live
+LOCATION:YouTube - Lucene Ch.
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:lucene-schedule-2026-10-04@lucenech
+DTSTAMP:20260927T171643Z
+SEQUENCE:0
+X-SCHEDULE-SOURCE:polygon
+DTSTART:20261004T130000Z
+DTEND:20261004T150000Z
+SUMMARY:[Lucene Ch.] ความรู้สึกของงาน 6 ปี
+DESCRIPTION:ความรู้สึกของงาน 6 ปี\nLocal time: 2026-10-04 20:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
