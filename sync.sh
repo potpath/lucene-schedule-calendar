@@ -106,6 +106,14 @@ extract_and_apply() {
     --json-schema "$SCHEMA" \
     --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": false}}' \
     < "$input" > "$output" 2>>"$REPO_DIR/sync.log"
+  # Without this, a claude that never ran (e.g. not on launchd's minimal PATH,
+  # exit 127) only surfaces as sync_apply.py choking on an empty result.
+  local claude_status=$?
+  if [ "$claude_status" -ne 0 ]; then
+    log "ERROR: claude exited $claude_status for the $tag extraction (see sync.log)."
+    rm -f "$input" "$output"
+    return 1
+  fi
 
   tail -n 1 "$output" > "$result"
 
