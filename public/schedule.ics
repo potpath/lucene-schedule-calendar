@@ -7,20 +7,6 @@ X-WR-CALNAME:Lucene Ch. Weekly Schedule
 X-WR-TIMEZONE:Asia/Bangkok
 X-WR-CALDESC:Weekly livestream schedule for Lucene Ch. (Lucene - Polygon Project VTuber), sourced from the pinned schedule video https://www.youtube.com/watch?v=O4FtQpWRAB8 and, for weeks that video has not covered yet, from Polygon Project's weekly schedule for all its members
 BEGIN:VEVENT
-UID:lucene-schedule-2026-11-02@lucenech
-DTSTAMP:20261105T011526Z
-SEQUENCE:1
-X-SCHEDULE-SOURCE:youtube
-DTSTART:20261102T100000Z
-DTEND:20261102T120000Z
-SUMMARY:[Lucene Ch.] เกิดใหม่ 1 ใน 65 ล้านคน ?!
-DESCRIPTION:เกิดใหม่ 1 ใน 65 ล้านคน ?!\nLocal time: 2026-11-02 17:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
-URL:https://www.youtube.com/@LucenePLG/live
-LOCATION:YouTube - Lucene Ch.
-STATUS:CONFIRMED
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:lucene-schedule-2026-11-03@lucenech
 DTSTAMP:20261105T011526Z
 SEQUENCE:1
@@ -148,13 +134,13 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:lucene-schedule-2026-11-16@lucenech
-DTSTAMP:20261115T141550Z
-SEQUENCE:0
-X-SCHEDULE-SOURCE:polygon
+DTSTAMP:20261117T141521Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
 DTSTART:20261116T073000Z
 DTEND:20261116T093000Z
 SUMMARY:[Lucene Ch.] ลุ้นดวงกับเน่
-DESCRIPTION:ลุ้นดวงกับเน่\nLocal time: 2026-11-16 14:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+DESCRIPTION:ลุ้นดวงกับเน่\nLocal time: 2026-11-16 14:30 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
@@ -162,13 +148,13 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:lucene-schedule-2026-11-16-2@lucenech
-DTSTAMP:20261115T141550Z
-SEQUENCE:0
-X-SCHEDULE-SOURCE:polygon
+DTSTAMP:20261117T141521Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
 DTSTART:20261116T130000Z
 DTEND:20261116T150000Z
 SUMMARY:[Lucene Ch.] เส้นทางการศึกษา
-DESCRIPTION:เส้นทางการศึกษา\nLocal time: 2026-11-16 20:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+DESCRIPTION:เส้นทางการศึกษา\nLocal time: 2026-11-16 20:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
@@ -176,13 +162,13 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:lucene-schedule-2026-11-17@lucenech
-DTSTAMP:20261115T141550Z
-SEQUENCE:0
-X-SCHEDULE-SOURCE:polygon
+DTSTAMP:20261117T141521Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
 DTSTART:20261117T140000Z
 DTEND:20261117T160000Z
 SUMMARY:[Lucene Ch.] Umamusume Pretty Derby
-DESCRIPTION:Umamusume Pretty Derby\nLocal time: 2026-11-17 21:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+DESCRIPTION:Umamusume Pretty Derby\nLocal time: 2026-11-17 21:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
@@ -190,13 +176,13 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:lucene-schedule-2026-11-19@lucenech
-DTSTAMP:20261115T141550Z
-SEQUENCE:0
-X-SCHEDULE-SOURCE:polygon
+DTSTAMP:20261117T141521Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
 DTSTART:20261119T130000Z
 DTEND:20261119T150000Z
 SUMMARY:[Lucene Ch.] ร้องเพลง
-DESCRIPTION:ร้องเพลง\nLocal time: 2026-11-19 20:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+DESCRIPTION:ร้องเพลง\nLocal time: 2026-11-19 20:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
@@ -204,13 +190,13 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:lucene-schedule-2026-11-20@lucenech
-DTSTAMP:20261115T141550Z
-SEQUENCE:0
-X-SCHEDULE-SOURCE:polygon
+DTSTAMP:20261117T141521Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
 DTSTART:20261120T140000Z
 DTEND:20261120T160000Z
 SUMMARY:[Lucene Ch.] Q&A ประสบการณ์ครั้งแรก
-DESCRIPTION:Q&A ประสบการณ์ครั้งแรก\nLocal time: 2026-11-20 21:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+DESCRIPTION:Q&A ประสบการณ์ครั้งแรก\nLocal time: 2026-11-20 21:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
@@ -218,13 +204,13 @@ TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:lucene-schedule-2026-11-22@lucenech
-DTSTAMP:20261115T141550Z
-SEQUENCE:0
-X-SCHEDULE-SOURCE:polygon
+DTSTAMP:20261117T141521Z
+SEQUENCE:1
+X-SCHEDULE-SOURCE:youtube
 DTSTART:20261122T110000Z
 DTEND:20261122T130000Z
-SUMMARY:[Lucene Ch.] Poly Flavor
-DESCRIPTION:Poly Flavor\nLocal time: 2026-11-22 18:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: Polygon Project's weekly schedule for all its members\, published ahead of Lucene Ch.'s own schedule video.
+SUMMARY:[Lucene Ch.] Poly Flavor ราเม็งขั้นเทพ
+DESCRIPTION:Poly Flavor ราเม็งขั้นเทพ\nLocal time: 2026-11-22 18:00 GMT+7 (Asia/Bangkok).\nDuration is an estimate (2h)\, actual stream length may vary.\nSchedule source: https://www.youtube.com/watch?v=O4FtQpWRAB8
 URL:https://www.youtube.com/@LucenePLG/live
 LOCATION:YouTube - Lucene Ch.
 STATUS:CONFIRMED
